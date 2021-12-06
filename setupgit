@@ -1,0 +1,22 @@
+#!/bin/bash
+if [ -z "$1" ]; then
+        echo Usage: setupgit [name] [y]
+        echo When the y-flag is passed, git init will be called before setup
+        exit
+fi
+if [ "$2" = "y" ]; then
+        git init
+fi
+case "$1" in
+        "u1")
+                git config --local user.name user-1
+                git config --local user.email user-1@example.com
+                ;;
+        "u2")
+                git config --local user.name user-2
+                git config --local user.email rabdomnumbers+user-2@users.noreply.github.com
+                ;;
+        *)
+                echo "invalid user"
+                ;;
+esac
