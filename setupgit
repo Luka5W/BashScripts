@@ -14,7 +14,7 @@ case "$1" in
                 ;;
         "u2")
                 git config --local user.name user-2
-                git config --local user.email rabdomnumbers+user-2@users.noreply.github.com
+                git config --local user.email randomnumbers+user-2@users.noreply.github.com
                 ;;
         *)
                 echo "invalid user"
