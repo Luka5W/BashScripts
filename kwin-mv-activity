@@ -16,7 +16,7 @@ function showHelp {
 "  -p, --prev                 Move window to the previous activity relative to\n"\
 "                               the current one - when the current activity is\n"\
 "                               the first, it wraps around to the last\n"\
-"EXIT CODES\n\n"\
+"EXIT CODES\n"\
 "  0 success\n"\
 "  1 invalid option\n"\
 "  2 invalid argument\n"\
@@ -57,6 +57,11 @@ fi
 case "$1" in
   \-\-activity | \-a)
     if [ -z "$2" ]; then
+      showUsageForUnknownActivity;
+      exit $?;
+    fi
+    kactivities-cli --list-activities | grep "$2";
+    if [ $? -ne 0 ]; then
       showUsageForUnknownActivity;
       exit $?;
     fi
