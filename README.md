@@ -21,7 +21,7 @@ The names have to be defined by the user itself in the case statement.
 When the `y`-flag is passed, git init will be called before setup
 
 
-###Examples
+### Examples
 
 ```
 $ setupgit lukas
