@@ -1,0 +1,99 @@
+#!/bin/bash
+
+usage="Usage: kwin-mv-activity [OPTION] [[ARGUMENT]]";
+
+# returns 0
+function showHelp {
+  echo -e "$usage\n"\
+"Moves the currently active window to the passed activity\n"\
+"OPTIONS\n"\
+"  -a, --activity         ID  Move window to the activity with the passed ID\n"\
+"  -A, --activity-name  NAME  Move window to the activity with the passed name\n"\
+"  -n, --next                 Move window to the next activity relative to the\n"\
+"                               current one - when the current activity is the\n"\
+"                               last one, it wraps around to the first\n"\
+"  -p, --prev                 Move window to the previous activity relative to\n"\
+"                               the current one - when the current activity is\n"\
+"                               the first, it wraps around to the last\n"\
+"EXIT CODES\n\n"\
+"  0 success\n"\
+"  1 invalid option\n"\
+"  2 invalid argument\n"\
+"  3 unexpected error";
+  return 0;
+}
+
+# args
+#   invalid-argument
+# returns 2
+function showUsageForUnknownActivity {
+  echo -e "$usage\nUnknown activity '$activity'. to get a list of all activities, use\n"\
+"kactivities-cli --list-activities";
+  return 2;
+}
+
+# args
+#   activity-id
+# returns
+#   3 on empty args
+#   xprop…?
+function moveWindow {
+  if [ -z "$1" ]; then
+    echo "unexpected empty parameter for moveWindow";
+    return 3;
+  fi
+  xprop -f _KDE_NET_WM_ACTIVITIES 8s \
+      -id $(xdotool getwindowfocus) \
+      -set _KDE_NET_WM_ACTIVITIES $1;
+  return $?;
+}
+
+case "$1" in
+  \-\-activity | \-a)
+    if [ -z "$2" ]; then
+      showUsageForUnknownActivity;
+      exit $?;
+    fi
+    moveWindow $2;
+    exit $?;
+    ;;
+  \-\-activity-name | \-A)
+    if [ -z "$2" ]; then
+      showUsageForUnknownActivity;
+      exit $?;
+    fi
+    activity=$(kactivities-cli --list-activities | grep "$2" | cut -d" " -f2);
+    if [ $? -ne 0 ] || [ -z "$activity" ]; then
+      showUsageForUnknownActivity;
+      exit $?;
+    fi
+    moveWindow $activity;
+    exit $?;
+    ;;
+  \-\-next | \-n)
+    activity=$(kactivities-cli --list-activities |
+      grep -A 1 -C 0 -F '[CURRENT] ' |
+      grep -F '[RUNNING] ' |
+      cut -d" " -f2);
+    if [ -z "$activity" ]; then
+      activity=$(kactivities-cli --list-activities | head -n 1 | cut -d" " -f2);
+    fi
+    moveWindow $activity;
+    ;;
+  \-\-prev | \-p)
+    activity=$(kactivities-cli --list-activities |
+      grep -B 1 -C 0 -F '[CURRENT] ' |
+      grep -F '[RUNNING] ' |
+      cut -d" " -f2);
+    if [ -z "$activity" ]; then
+      activity=$(kactivities-cli --list-activities | tail -n 1 | cut -d" " -f2);
+    fi
+    moveWindow $activity;
+    ;;
+  *)
+    exit 1;
+    ;;
+esac
+
+echo "unexpected EOF";
+exit 3;
