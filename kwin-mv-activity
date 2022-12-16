@@ -8,6 +8,7 @@ function showHelp {
 "Moves the currently active window to the passed activity\n"\
 "OPTIONS\n"\
 "  -a, --activity         ID  Move window to the activity with the passed ID\n"\
+"  -h, --help                 Shows this help text\n"\
 "  -A, --activity-name  NAME  Move window to the activity with the passed name\n"\
 "  -n, --next                 Move window to the next activity relative to the\n"\
 "                               current one - when the current activity is the\n"\
@@ -48,6 +49,11 @@ function moveWindow {
   return $?;
 }
 
+if [ -z "$1" ]; then
+  showHelp;
+  exit 1;
+fi
+
 case "$1" in
   \-\-activity | \-a)
     if [ -z "$2" ]; then
@@ -68,6 +74,10 @@ case "$1" in
       exit $?;
     fi
     moveWindow $activity;
+    exit $?;
+    ;;
+  \-\-help | \-h)
+    showHelp;
     exit $?;
     ;;
   \-\-next | \-n)
