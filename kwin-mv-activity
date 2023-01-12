@@ -24,6 +24,7 @@ showHelp () {
 "  1 invalid option\n"\
 "  2 invalid argument\n"\
 "  3 unexpected error\n"\
+"  4 no active window found\n"\
 "VERSION\n"\
 "  $version";
   return 0;
@@ -43,15 +44,26 @@ showUsageForUnknownActivity () {
 # args
 #   activity-id
 # returns
-#   3 on empty args
+#   3 on empty args or when xdotool returned an empty window id
+#   4 when the found window is the desktop (no active window found)
 #   xprop…?
 moveWindow () {
   if [ -z "$1" ]; then
     echo "unexpected empty parameter for moveWindow";
     return 3;
   fi
+  focusedWindow=$(xdotool getwindowfocus);
+  if [ -z "$focusedWindow" ]; then
+    echo "xdotool returned an unexpected empty id for current window";
+    return 3;
+  fi
+  type=$(xprop -id "$focusedWindow" _NET_WM_WINDOW_TYPE);
+  if [[ "$type" =~ _NET_WM_WINDOW_TYPE_DESKTOP$ ]]; then
+    echo "no active window found";
+    return 4;
+  fi
   xprop -f _KDE_NET_WM_ACTIVITIES 8s \
-      -id $(xdotool getwindowfocus) \
+      -id "$focusedWindow" \
       -set _KDE_NET_WM_ACTIVITIES "$1";
   return $?;
 }
