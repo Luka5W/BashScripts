@@ -49,9 +49,7 @@ The author of the issue wrote:
 > But hopefully you can see why this implementation is really messy (you can
 > send your desktop to the shadow realm if you're not careful). \[…\]
 
-I haven't undestood, how you 'achieve' that, but it works for me, so… fixed. I
-guess. So **use this script with caution**, if you know, what the author meant,
-feel free to open an issue.
+This shoud've been fixed in v0.0.2.
 
 
 ### Description
