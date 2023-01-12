@@ -1,9 +1,12 @@
 #!/bin/bash
 
+version="0.0.1";
+
 usage="Usage: kwin-mv-activity [OPTION] [[ARGUMENT]]";
 
+# displays the help text
 # returns 0
-function showHelp {
+showHelp () {
   echo -e "$usage\n"\
 "Moves the currently active window to the passed activity\n"\
 "OPTIONS\n"\
@@ -20,32 +23,36 @@ function showHelp {
 "  0 success\n"\
 "  1 invalid option\n"\
 "  2 invalid argument\n"\
-"  3 unexpected error";
+"  3 unexpected error\n"\
+"VERSION\n"\
+"  $version";
   return 0;
 }
 
+# displays the usage text
 # args
 #   invalid-argument
 # returns 2
-function showUsageForUnknownActivity {
+showUsageForUnknownActivity () {
   echo -e "$usage\nUnknown activity '$activity'. to get a list of all activities, use\n"\
 "kactivities-cli --list-activities";
   return 2;
 }
 
+# checks if the activity-id is not empty and a window which can be moved exists
 # args
 #   activity-id
 # returns
 #   3 on empty args
 #   xprop…?
-function moveWindow {
+moveWindow () {
   if [ -z "$1" ]; then
     echo "unexpected empty parameter for moveWindow";
     return 3;
   fi
   xprop -f _KDE_NET_WM_ACTIVITIES 8s \
       -id $(xdotool getwindowfocus) \
-      -set _KDE_NET_WM_ACTIVITIES $1;
+      -set _KDE_NET_WM_ACTIVITIES "$1";
   return $?;
 }
 
@@ -55,7 +62,7 @@ if [ -z "$1" ]; then
 fi
 
 case "$1" in
-  \-\-activity | \-a)
+  --activity | -a)
     if [ -z "$2" ]; then
       showUsageForUnknownActivity;
       exit $?;
@@ -65,10 +72,10 @@ case "$1" in
       showUsageForUnknownActivity;
       exit $?;
     fi
-    moveWindow $2;
+    moveWindow "$2";
     exit $?;
     ;;
-  \-\-activity-name | \-A)
+  --activity-name | -A)
     if [ -z "$2" ]; then
       showUsageForUnknownActivity;
       exit $?;
@@ -78,14 +85,14 @@ case "$1" in
       showUsageForUnknownActivity;
       exit $?;
     fi
-    moveWindow $activity;
+    moveWindow "$activity";
     exit $?;
     ;;
-  \-\-help | \-h)
+  --help | -h)
     showHelp;
     exit $?;
     ;;
-  \-\-next | \-n)
+  --next | -n)
     activity=$(kactivities-cli --list-activities |
       grep -A 1 -C 0 -F '[CURRENT] ' |
       grep -F '[RUNNING] ' |
@@ -93,9 +100,9 @@ case "$1" in
     if [ -z "$activity" ]; then
       activity=$(kactivities-cli --list-activities | head -n 1 | cut -d" " -f2);
     fi
-    moveWindow $activity;
+    moveWindow "$activity";
     ;;
-  \-\-prev | \-p)
+  --prev | -p)
     activity=$(kactivities-cli --list-activities |
       grep -B 1 -C 0 -F '[CURRENT] ' |
       grep -F '[RUNNING] ' |
@@ -103,7 +110,7 @@ case "$1" in
     if [ -z "$activity" ]; then
       activity=$(kactivities-cli --list-activities | tail -n 1 | cut -d" " -f2);
     fi
-    moveWindow $activity;
+    moveWindow "$activity";
     ;;
   *)
     exit 1;
