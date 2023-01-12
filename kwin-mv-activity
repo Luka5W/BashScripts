@@ -19,6 +19,7 @@ showHelp () {
 "  -p, --prev                 Move window to the previous activity relative to\n"\
 "                               the current one - when the current activity is\n"\
 "                               the first, it wraps around to the last\n"\
+"  -v, --version              Shows the scripts version\n"\
 "EXIT CODES\n"\
 "  0 success\n"\
 "  1 invalid option\n"\
@@ -123,6 +124,10 @@ case "$1" in
       activity=$(kactivities-cli --list-activities | tail -n 1 | cut -d" " -f2);
     fi
     moveWindow "$activity";
+    ;;
+  --version | -v)
+    echo "$version";
+    exit 0;
     ;;
   *)
     exit 1;
