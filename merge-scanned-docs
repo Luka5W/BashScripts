@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# prints help text 
+# exits 0
+help() {
+  echo "merges double printed documents scanned twice";
+  echo "usage: merge-scanned-docs <docpath>";
+  echo "assumes two PDFs named <docpath>_odd.pdf and <docpath>_even.pdf";
+  echo "assumes that <docpath>_even.pdf is in reverse order";
+  echo "generates a new PDF named <docpath>.pdf";
+  exit 0;
+}
+
+# checks if a file or directory exists
+# param 1: the file to check
+# returns 0: if the file or directory doesn't exist
+# exits 1: if the file or directory exists
+checkF() {
+  if [ -f "$1" ]; then
+    echo "file '$1' already exists. aborting".
+    exit 1;
+  fi
+  return 0;
+}
+
+# checks reada access of a file
+# param 1: the file to check
+# returns 0: if the file exist
+# exits 1: if the file either doesn't exist or no read permission are granted 
+checkR() {
+  if [ ! -e "$1" ]; then
+    echo "file '$1' not found. aborting.";
+    exit 1;
+  fi
+  if [ ! -r "$1" ]; then
+    echo "no read permission for file '$1' granted. aborting.";
+    exit 1;
+  fi
+  return 0;
+}
+
+# start
+if [ -z "$1" ]; then
+  help;
+fi
+
+# build 3 filenames
+inA="$1_odd.pdf";
+inB="$1_even.pdf";
+out="$1.pdf";
+
+# check files
+checkR $inA;
+checkR $inB;
+checkF $out;
+
+# merge files
+pdftk A="$inA" B="$inB" shuffle A Bend-1 output "$out";

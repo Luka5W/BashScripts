@@ -3,32 +3,6 @@ A bunch of bash utilities I use...
 
 Every file is licensed under the Unlicense license, so do whatever you want.
 
-## SetupGit
-
-[file](./setupgit)
-
-_A small script to setup a git repository with predefined email and username._
-
-
-### Description
-
-The names have to be defined by the user itself in the case statement.
-
-
-### Usage
-
-`setupgit [name] [y]`
-When the `y`-flag is passed, git init will be called before setup
-
-
-### Examples
-
-```
-$ setupgit lukas
-$ setupgit lukas y
-```
-
-
 ## KDE Plasma Window Mover
 
 [file](./kwin-mv-activity)
@@ -72,3 +46,55 @@ command to it.
 | Graphics Platform      | X11           |
 
 (Just use it how it's intended, I haven't cached every edge case)
+
+
+## Merge-Scanned-Docs
+
+_A quick and dirty utility to fit
+`pdftk A="$inA" B="$inB" shuffle A Bend-1 output "$out"` into a single command._
+
+### Requirements
+
+The script requires [pdftk](https://packages.debian.org/buster/pdftk).
+
+(Debian based: `sudo apt install pdftk`)
+
+(Man Page:
+[pdftk(1)](https://manpages.debian.org/stretch/pdftk/pdftk.1.en.html))
+
+
+### Usage
+
+`merge-scanned-docs /path/to/file`
+
+The script expects two files: `/path/to/file_odd.pdf` which contains the odd
+pages and `/path/to/file_even.pdf` which contains the even pages.
+And it expects that `/path/to/file.pdf` does not exist.
+
+If no argument is passed, it prints a help text and exits.
+
+
+## SetupGit
+
+[file](./setupgit)
+
+_A small script to setup a git repository with predefined email and username._
+
+
+### Description
+
+The names have to be defined by the user itself in the case statement.
+
+
+### Usage
+
+`setupgit [name] [y]`
+When the `y`-flag is passed, git init will be called before setup
+
+
+### Examples
+
+```
+$ setupgit lukas
+$ setupgit lukas y
+```
